@@ -18,3 +18,16 @@ $ boot2docker start
 或者运行 boot2docker的ip 命令来查看端口号。
 $ boot2docker ip
 
+###  启动 Docker
+如果是使用 boot2docker 的docker，启动命令为
+boot2docker start
+
+如果是 Linux 安装的 docker 启动命令一般为
+sudo service docker start
+
+如果不是，请查看 Linux 的系统服务的启动软件是什么，应用响应的启动方式即可。
+
+### 验证docker 是否正确安装且运行
+
+$ sudo docker info
+
