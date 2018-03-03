@@ -1,0 +1,1 @@
+mac 配置文件 /usr/local/etc/redis.conf
