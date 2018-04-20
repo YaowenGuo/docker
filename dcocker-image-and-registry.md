@@ -19,20 +19,30 @@ Dcoekr 很像一个典型的Linux虚拟化栈，docker镜像的第二层是root�
    
    
    
-# 列出镜像
+# 列出本地镜像
 
 > sudo docker images
 
-该命令会列出所有的dcoker镜像，这些镜像就是执行docker run指令时，从docker官方上下载的。本地的镜像存放在/var/lib/docker目录下。每个镜像都保存在docker所采用的存储驱动目录下面，如aufs或者devicemapper。也可以在/var/lib/docker/containers目录下看到所有的容器。
+该命令会列出本地所有的dcoker镜像，这些镜像就是执行docker run指令时，从docker官方上下载的。
+- 在linux上
+
+本地的镜像存放在/var/lib/docker目录下。每个镜像都保存在docker所采用的存储驱动目录下面，如aufs或者devicemapper。
+容器保存在/var/lib/docker/containers目录下看到所有的容器。
+
+- 在 Mac 上(Docker for Mac 版本)
+
+镜像:~/Library/Containers/com.docker.docker/Data/com.docker.driver.amd64-linux/Docker.raw
+容器: 
 
    镜像从仓库中下载下来，默认的仓库是docker公司运营的公共Registry服务。及Docker Hub。也可以自己建立Registry仓库。
    
    
-每个仓库都可以存放很多镜像，比如ubuntu仓库，下拉仓库
+每个仓库都可以存放很多镜像，比如ubuntu仓库，
+# 下拉仓库
 
 > sudo docker pull ubuntu
 
-拉取docker中的所有内容。使用docke images就可以查看所有下拉下来的镜像。
+同一类型的镜像放在同一个仓库中，例如ubuntu的镜像放在ubuntu仓库总。如上指令拉取ubuntu中的所有镜像。使用docke images就可以查看所有下拉下来的镜像。统一仓库中不同镜像使用tag进行了区分。
 
 **虽然称其为ubuntu系统，但实际上并不是一个完整的系统。只是一个包换最低限度的支持系统运行的组件。**
 
@@ -48,16 +58,18 @@ Dcoekr 很像一个典型的Linux虚拟化栈，docker镜像的第二层是root�
 docker Hub 包含两种仓库，用于仓库和顶级仓库。顶级仓库是由Docker内部管理的。用户仓库的命名由<用户名/仓库名>两部分组成。而顶级仓库只包含仓库名，如ubuntu。
 
 
-### 查看指定仓库的镜像
+# 查看本机镜像
 
-> docker images <仓库名>
+> docker images [仓库名/镜像名]
 docker images fedora
 
+如果不指定仓库名，将显示所有的本地镜像。
 所列出的镜像中，相同id号的镜像是同一镜像，只是tag不同。
 
 # 查找Docker Hub上的镜像
 
-> docker search puppet
+> docker search [镜像名[:tag]]
+镜像名和tag可以任意组合，来查找在线仓库中的镜像。
 查找到之后就可以使用镜像名下载或者创建本机镜像。docker会自动从Dcoker Hub上下载并创建本地镜像。
 
 # 构建镜像
