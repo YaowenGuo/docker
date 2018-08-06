@@ -1,3 +1,7 @@
+# 认识容器
+
+[TOC]
+
 安装完docker之后就可以开始使用了。docker 使用 c/s 架构，因此 docker 软件其实分为两部分，docker 服务端和一个命令行形式的 docker 客户端。这种c/s形式的组合使得 docker 能够应用于云服务和分布式的环境中。
 
 > docker 不等于容器
@@ -6,6 +10,7 @@
 
 2. docker 不仅含有 docker 容器。docker 可以分为 docker 客户端和 docker 服务端组成。而服务端有包括 docker 容器、守护进程。
 
+## Docker
 
 ### 连接 docker
 
@@ -14,10 +19,13 @@ c/s 结构的软件都具有一个特点，使用ip地址来建立连接。这�
 > 查看 boot2docker 的ip地址
 
 当启动或者安装 boot2docker 的时候，会有提示设置DOCKER_HOST的值，改值存储的就是ip地址和端口号。
+```
 $ boot2docker start
+```
 或者运行 boot2docker的ip 命令来查看端口号。
+```
 $ boot2docker ip
-
+```
 ###  启动 Docker
 如果是使用 boot2docker 的docker，启动命令为
 boot2docker start
@@ -32,7 +40,9 @@ sudo service docker start
 $ sudo docker info
 
 
-### 创建并启动 容器 docker run 命令
+## 容器
+
+### 创建并启动容器 docker run 命令
 
 $ sudo docker run -i -t ubuntu /bin/bash
 
@@ -85,13 +95,13 @@ ff02::2	ip6-allrouters
 > 安装一些常用的命令
 
 apt-get update
-//ifconfig 
+//ifconfig
 //apt install net-tools  ifconfig 已经好多年没有维护了，你需要使用ip命令。
 // ip 套件
 apt install iproute2
 //ping
-apt install iputils-ping 
-// 
+apt install iputils-ping
+//
 
 > 查看进程
 ps -aux
@@ -111,7 +121,7 @@ docker ps 只能查看到正在运行的容器， -a 参数查看所有容器。
 
 短UUID 长UUID和名称都能用来指定一个容器。如上面的id就是短的UUID，它是UUID的前一段。
 
-# 容器命名
+### 容器命名
 
 docker 会为创建的容器随机生成一个名字，如上面的clever_bassi
 。如果想要自己指定名字，可以使用--name 表示来实现。
@@ -120,7 +130,7 @@ sudo docker run --name bob_the_container -i -t ubuntu /bin/bash
 
 上述创建一个名为 bob_the_container 的容器。一个合法的容器名包括 字母、数字、下换线、圆点、横线。容器的名称必须是唯一的，否则会创建失败。可以使用docker rm 删除已存在的容器。
 
-# 重新启动已经停止的容器 start
+### 重新启动已经停止的容器 start
 
 sudo docker start 容器名 | ID
 
@@ -128,15 +138,15 @@ docker restart 重启一个容器。
 
 启动后发现，默认并没有打开交互式的shell。想要交互，则需要附着到该shell上。
 
-# 附着到容器上 attach
+### 附着到容器上 attach
 
 容器重新启动的时候，会沿用docker run命令指定的参数来运行。因此docker启动的时候回运行一个交互式的shell会话。此外，还可以使用 docker attach 命令重新附着到该容器会话上。
 
-sudo docker sttach 容器名 | ID
+sudo docker attach 容器名 | ID
 
 **按下回车才会进入会话**
 
-# 创建守护式容器
+### 创建守护式容器
 
 守护式容器(daemonized container)没有交互式会话，非常适合在后台运行应用程序和服务。大多数情况都是创建守护式的容器。
 
@@ -146,7 +156,7 @@ sudo docker run --name daemon_dave -d  ubuntu /bin/sh -c "while true; do echo he
 
 使用该命令创建的容器只返回了一个容器ID，而不是交互式的shell。
 
-# 容器内部都在干什么
+### 容器内部都在干什么
 
 上面创建的守护式容器在后台执行，为了查看容器内部在干什么，可以查看日志文件。
 
@@ -164,19 +174,19 @@ Ctrl + C 退出监控。
 
 > docker logs --tail 0 -f <容器名|ID>  跟踪容器最新的日志而不必读取整个日志文件。
 
-还可以使用-t给每条日志加上时间戳 
+还可以使用-t给每条日志加上时间戳
 
 > sudo docker logs -ft <容器名|ID>
 
-# 查看容器内的进程 docker top
+### 查看容器内的进程 docker top
 
 > sudo docker top <容器名|ID>
 
-# 在容器内部运行进程 docker exec
+### 在容器内部运行进程 docker exec
 
 在容器内部额外启动新进程。分为后台和交互两种
 
-### 后台 
+### 后台
 
 > sudo docker exec -d <容器名|ID> touch /dec/new_config_file
 
@@ -193,7 +203,7 @@ Ctrl + C 退出监控。
 - 容器名后面是要执行的命令。
 
 
-# 停止守护进程容器 docker stop
+### 停止守护进程容器 docker stop
 
 > sudo docker stop <容器名|ID>
 
@@ -201,9 +211,9 @@ docker stop 命令会向容器发送SIGTERM信号。如果想要快速停止某�
 
 想要查看已经停止的容器的状态，则可以使用docker ps命令。docker ps
  -n x命令则会显示最后x个容器，不论这些容器是在运行还是已经停止。
- 
 
-# 自动重启容器
+
+### 自动重启容器
 
 容器中的进程停止了，容器也会随之结束。如果容器中的进程因为错误而终止，可以通过--restart标志重新启动该容器。--restart 会检查容器的退出代码，并据此决定是否要重启容器。
 
@@ -213,7 +223,7 @@ docker stop 命令会向容器发送SIGTERM信号。如果想要快速停止某�
 - on-failure 退出代码为非0时重启。另外，on-failure还可以接受一个可选的重启次数，如--restart=on-failure:5 最多重启5次。
 
 
-# 更多容器信息 docker inspect
+### 更多容器信息 docker inspect
 
 > sudo docker inspect <容器名|ID>
 
@@ -230,20 +240,45 @@ docker inspect 会对容器进行详细的检查，然后返回其配置信息�
 **查看/var/lib/docker目录可以深入了解docker的工作原理，该目录下存放着Docker镜像、容器以及容器配置。所有的容器都保存在/var/lib/docker/containers目录下。**
 
 
-# 删除容器 docker rm
+### 删除容器 docker rm
 
 > docker rm <容器名|ID>
 
 运行中的容器无法删除。没有删除全部容器的指令，可以通过如下技巧
 
 > docke rm `docker ps -a -q`
- 
+
 -a : 所有容器，
 -q : 只返回容器的id，而不返回其他信息。
 
+### 查看 docker 容器信息
 
+### -p 为容器指定端口
 
+$ sudo docker run -d -p --name <docker_name> <directory_name/image_name:tag> <command>
 
+对外公开 EXPOSE 指令指定的所有端口号，在主句上的端口映射会随机分配。
 
+$ sudo docker run -d -p 80 --name <docker_name> <directory_name/image_name:tag> <command>
 
+指定 容器打开 80 端口，但是在主机内的端口映射却是任意的。
 
+指定映射关系
+
+$ sudo docker run -d -p 8080:80 --name <docker_name> <directory_name/image_name:tag> <command>
+
+将主句的 8080 映射到 docker 容器的 80 端口。
+
+有时候，由于网络的改变，主机的 ip 是不停的变的，此时要想通过 ip 访问一个 容器变得麻烦，只要ip改变，就要改变用于访问容器的 ip 值。其实 docker 也可以指定将端口绑定到数据的什么 ip 上。
+
+$ sudo docker run -d -p 127.0.0.1::80 --name <docker_name> <directory_name/image_name:tag> <command>
+
+这里将容器的 80 端口绑定到本地宿主机的 127.0.0.1 这个 IP
+
+### 查看 容器端口
+
+sudo docker ps -l
+
+或者直接查看哪个端口的映射情况，
+
+sudo docker port <> 80
