@@ -85,12 +85,6 @@ docker images fedora
 不推荐使用docker commit命名，而应该使用更灵活、更强大的dockerfile来构建docker镜像。
 
 
-### 注册Docker Hub账号
-
-构建系统很重要的一环就是共享和发布，因此可以先初测一个Docker Hub账号，然后就可以使用Dcoker login命令登录了。
-
-个人的信息都会保存在~/.dockercfg文件中。
-
 ### commit创建镜像
 一般步骤是:
 1. docker run 基于已有的镜像创建一个容器。
@@ -99,7 +93,9 @@ docker images fedora
 
 > sudo docker commit <容器名|ID[:标签名]> <目标仓库/镜像名> [-m="说明" --author="作者"]
 
-ID，可以通过 docekr ps -l -q 得到刚创建的容器的id。
+- ID，可以通过 docker ps -l -q 得到刚创建的容器的id。
+    - -l: --latest
+    - -q: --quiet: Only display numeric IDs.
 目标仓库: 创建的镜像要保存的仓库
 镜像名: 保存的镜像的名字。
 
@@ -117,7 +113,7 @@ $ sudo  docker inspect 仓库名/镜像名:标签名
 Dockerfile使用基于 DSL 的语法来构架一个 Docker 镜像，使用docker build命令来执行Dcokerfile中的指令构建一个新的镜像。
 
 
-首先创建一个文件夹，然后在其中创建一个 Dockerfile 文件，这个目录就是五门的构建环境（build environment），Docker 称其为上下文（context）或者构建上线文。Docker 会在构建环境时将构建上下文和改上下文中的文件和目录上传到 Docker 守护进程。这样 Docker 守护进程就能直接访问你想要在金乡中存储的任何代码、文件或者其他数据。
+首先创建一个文件夹，然后在其中创建一个 Dockerfile 文件，这个目录就是我们的构建环境（build environment），Docker 称其为上下文（context）或者构建上线文。Docker 会在构建环境时将构建上下文和改上下文中的文件和目录上传到 Docker 守护进程。这样 Docker 守护进程就能直接访问你想要在金乡中存储的任何代码、文件或者其他数据。
 
 最简单的 Dockerfile
 Dockerfile 由一些指令和其参数构成，每个指令都必须大写，后跟其参数。
@@ -148,33 +144,38 @@ EXPORT 80 # 告诉 Docker 改容器内的应用将会使用容器的端口。�
 
 RUN ["apt-get", "install", "-y", "nginx"]
 
-### 基于 Dockerfile 构建镜像
+#### 基于 Dockerfile 构建镜像
 
 执行 docker build 时，Docker会在指定的目录下寻找 Dockerfile 文件， Dockerfile 中的所有指令都会被执行并且提交，并且在改命令成功结束后，返回一个新镜像。并输出改镜像的 id。
 
 $ sudo docker build -t="指定创建后的镜像的目标仓库/镜像名[:tag]" .
 
-如果没有为镜像指定标签，Docker 会自动为镜像设置一个 lastest 标签。
+- 如果没有为镜像指定标签，Docker 会自动为镜像设置一个 lastest 标签。
 
-也可以指定一个git 仓库源地址来指定 Dockerfile 的位置
-
+- "." 告诉 Docker 到本地目录中去找 Dockerfile 文件。也可以指定一个git 仓库源地址来指定 Dockerfile 的位置
+```
 $ sudo docker build -t="指定创建后的镜像的目标仓库/镜像名[:tag]" \
 git@github.com:.../
-
+```
 Docker 会假定git 仓库的目录中存在 Dockerfile 文件。
 
 > 忽略文件，不需要上传到 镜像中的文件
 
 在构建上下文的根目录（Dockerfile 所在的位置）存在以 .dockerignore 命名的文件，该文件和文件中指定的文件都不会上传到镜像中。该文件使用了 Go 语言中的 filepath.
 
-### 指令执行失败
+#### 查看镜像的构建过程
+```
+$ sudo docker history <docker-id>
+```
+
+#### 指令执行失败
 
 根据 Dockfile 的执行机制，每条RUN 指令都是一个提交，所有如果某一条指令执行失败了，那么也会得到一个可以使用的镜像，这对调试非常有帮助，可以基于该镜像运行一个具备交互更能的容器，使用最后创建的镜像对执行失败的命令进行调试。
 
 
 sudo docker run 最后一条成功指令输出的id
 
-### 构建缓存
+#### 构建缓存
 
 docker 对镜像进行构建是，每执行一条语句都会进行一次提交，再次执行构建时，它会将之前已经构建成功的当做缓存，在其基础之上构建，而不是从新开始构建。这是非常明智的做法，能够节省很多时间。但有是有你希望从新构建，而不是使用缓存，这时需要再构建时使用 --no-cache 标志
 
@@ -197,9 +198,17 @@ RUN apt-get install -y nginx
 在 apt-get update 之前，使用 ENV 设置了一个换名变量。在下次需要变更镜像时，只需要修改 REFRESHED_AT 的值，由于这条命令被更改了，再次构建时，将从这条指令开始执行，之后的 apt-get 也会跟着执行，保证了应用最新的软件包，而不是原先构建的缓存。
 
 
-### 查看镜像是如何构建的
+#### 查看镜像是如何构建的
 
 sudo docker history <image_name|id>
+
+#### docker run 从镜像启动容器
+
+跟下载的镜像启动没有什么区别。查看 [docker run](./start.md)
+
+
+
+
 
 
 ## Dockerfile 指令

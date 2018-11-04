@@ -43,14 +43,85 @@ $ sudo docker info
 ## 容器
 
 ### 创建并启动容器 docker run 命令
-
+```
 $ sudo docker run -i -t ubuntu /bin/bash
-
+```
 - run : docker 的命令
 - -i : 保证容器中 STDIN 是开启的。尽管这里没有附着的容器中。
 - -t : 交互式的输入是shell的灵魂，-t则是为docker 分配一个伪tty 终端。这样创建的容器才成提供一个交互式的shell。
 - ubuntu : 基于什么镜像来创建容器，除了ubuntu，还有recora、debian、centos等基础镜像。在选择的镜像上创建容器。当执行run命令时，docker首先会在本地查找是否存在该镜像，如果不存在，则会搜索Docker Hub Registry。查看 Docker Hub 中是否有该镜像，Docker 一旦找到该镜像，就会下载到本地宿主机中。然后Docker 会用该镜像修创建一个新容器。该容器拥有自己的网络、IP地址、以及一个用于和宿主机通信的网桥网络接口。
 - /bin/bash : 启动docker执行的命令，这个参数会执行容器中的/bin/bash命令。如果执行该命令，启动后就会有一个容器内的shell可供使用。
+
+- -p <port>: 指定打开的端口号。
+- --name <container_name>: 给启动的容器命名
+- -d : 以分离（detached）式的方式在后台运行
+- -P
+- -w : 指定命令的运行工作目录
+- -e : 指定环境变量，如 `-e "WEB_PORT=8080"`
+
+```
+$ sudo docker run -d -p 80 --name my_web jamture01/my_docker \
+nginx -g "deamon off;"
+```
+
+-p 标志用来控制 Docker 在运行时应该公开哪些网络端口给外部（宿主机）。运行一个容器时，Docker可以通过两种方式来在宿主机上分配端口。
+
+1. Docker 可以在宿主机上随机选择一个位于 49153 ~ 65535 的一个比较大的端口号映射到容器80端口上。
+2. 可以指定宿主机的一个端口映射到容器的 80 端口上。
+
+上面的运行方式将使用第一中方式，随机分配端口。
+
+```
+$ sudo docker run -d -p 8080:80 --name my_web jamture01/my_docker \
+nginx -g "deamon off;"
+```
+
+将宿主机的 8080 端口绑定到容器的 80 端口上。
+
+也可以将端口绑定限制在特定网络接口（即IP地址）上
+```
+$ sudo docker run -d -p 127.0.0.1:80:80 --name my_web jamture01/my_docker \
+nginx -g "deamon off;"
+```
+类似的可以将容器的 80 端口绑定到宿主机的一个随机端口上。
+
+```
+$ sudo docker run -d -p 127.0.0.1::80 --name my_web jamture01/my_docker \
+nginx -g "deamon off;"
+```
+
+可以使用 docker inspect 或者 docker port 命令来查看容器内的 80 端口具体被绑定到宿主机哪个端口上。
+
+***也可以在端口绑定时使用/udp后缀来指定 UDP 端口***
+
+-P : 开放在 Dockerfile 中的 EXPOSE 指令中设置的所有端口。
+
+```
+$ sudo docker run -d -P --name my_web jamture01/my_docker \
+nginx -g "deamon off;"
+```
+#### 挂载卷
+-v: <source_directory>:<target_directory>
+
+-v 将宿主机的目录作为卷挂载到容器里。指定卷的源目录和在容器中的目的目录，通过“:”分割。如果目的目录不存在，docker 会自动创建一个。也可以在目录后面加上 rw 或者 ro 来指定目的目录的读写状态。
+
+```
+$ sudo docker run -d -P 80 --name web_site \
+-v $PWD/website:/var/www/html/website:ro \
+jamture01/my_docker \
+nginx -g "deamon off;"
+```
+
+> 卷： 卷是一个或多个容器内被选定的目录，可以绕过分层的联合文件系统（Union File System），为 Docker 提供持久数据或者共享数据。这意味着对卷的修改会立即生效，并绕过镜像。当提交或者创建镜像时，卷不被包含在镜像里。卷可以在容器间共享，即便是容器停止，卷里的内容依旧存在。
+
+适用卷的场景
+
+- 频繁改动的文件或项目（开发中或测试），比希望重现构建镜像。
+- 主机改动后，立即在容器中生效，反之亦然。
+- 保存容器中产生的数据
+- 多个容器中共享代码。
+
+
 
 ### 使用容器
 
@@ -156,7 +227,7 @@ sudo docker run --name daemon_dave -d  ubuntu /bin/sh -c "while true; do echo he
 
 使用该命令创建的容器只返回了一个容器ID，而不是交互式的shell。
 
-### 容器内部都在干什么
+### 容器内部都在干什么 docker log
 
 上面创建的守护式容器在后台执行，为了查看容器内部在干什么，可以查看日志文件。
 
@@ -275,10 +346,10 @@ $ sudo docker run -d -p 127.0.0.1::80 --name <docker_name> <directory_name/image
 
 这里将容器的 80 端口绑定到本地宿主机的 127.0.0.1 这个 IP
 
-### 查看 容器端口
+### 查看 容器端口 docker port
 
 sudo docker ps -l
 
 或者直接查看哪个端口的映射情况，
 
-sudo docker port <> 80
+sudo docker port <container_name> 80
