@@ -24,9 +24,12 @@ Dcoekr 很像一个典型的Linux虚拟化栈，docker镜像的第二层是root�
 
 ## 列出本地镜像
 
-> sudo docker images
+```shell
+$ sudo docker images
+```
 
 该命令会列出本地所有的dcoker镜像，这些镜像就是执行docker run指令时，从docker官方上下载的。
+
 - 在linux上
 
 本地的镜像存放在/var/lib/docker目录下。每个镜像都保存在docker所采用的存储驱动目录下面，如aufs或者devicemapper。
@@ -41,9 +44,18 @@ Dcoekr 很像一个典型的Linux虚拟化栈，docker镜像的第二层是root�
 
 
 每个仓库都可以存放很多镜像，比如ubuntu仓库，
+
+
 ## 下拉仓库
 
-> sudo docker pull ubuntu
+
+
+```shell
+$ docker search ubuntu # 搜索名字中带有该匹配的镜像。
+```
+```
+$ sudo docker pull ubuntu
+```
 
 同一类型的镜像放在同一个仓库中，例如ubuntu的镜像放在ubuntu仓库总。如上指令拉取ubuntu中的所有镜像。使用docke images就可以查看所有下拉下来的镜像。统一仓库中不同镜像使用tag进行了区分。
 
@@ -51,7 +63,9 @@ Dcoekr 很像一个典型的Linux虚拟化栈，docker镜像的第二层是root�
 
 同一个仓库中的不认同镜像可以使用tag区分。想要指定某个仓库中的特殊镜像时，就是用用<仓库名:tag>来表示的。
 
-> sudo docker run -it --name new_container ubuntu:12.04 bash
+```shell
+$ sudo docker run -it --name new_container ubuntu:12.04 bash
+```
 
 如果没有指定标签，则会默认拉取标记为latest的镜像。
 
@@ -63,15 +77,20 @@ docker Hub 包含两种仓库，用于仓库和顶级仓库。顶级仓库是由
 
 ## 查看本机镜像
 
-> docker images [仓库名/镜像名]
+```shell
+$ docker images [仓库名/镜像名]
 docker images fedora
+```
 
 如果不指定仓库名，将显示所有的本地镜像。
 所列出的镜像中，相同id号的镜像是同一镜像，只是tag不同。
 
 ## 查找Docker Hub上的镜像
 
-> docker search [镜像名[:tag]]
+```shell
+$ docker search [镜像名[:tag]]
+```
+
 镜像名和tag可以任意组合，来查找在线仓库中的镜像。
 查找到之后就可以使用镜像名下载或者创建本机镜像。docker会自动从Dcoker Hub上下载并创建本地镜像。
 

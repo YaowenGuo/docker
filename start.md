@@ -1,56 +1,92 @@
-# 认识容器
+# 快速使用
 
 [TOC]
 
-安装完docker之后就可以开始使用了。docker 使用 c/s 架构，因此 docker 软件其实分为两部分，docker 服务端和一个命令行形式的 docker 客户端。这种c/s形式的组合使得 docker 能够应用于云服务和分布式的环境中。
+##  启动 Docker
 
-> docker 不等于容器
-
-1. docker 使用到了容器技术，“容器”并不是一个新的技术，是在之前就已经存在的。docker使用容器技术，并运用集装箱的设计哲学，将 docker 设计成一个能够将不同软件及其运行环境快速复制到另一环境的工具。这种方式非常类似于运送货物的集装箱，集装箱并不在意内部的内容（货物，在docker中是软件和运行环境），运行和搬运的不再是很多的物品，而是整体打包的集装箱。使得再次的运输和部署非常轻松。
-
-2. docker 不仅含有 docker 容器。docker 可以分为 docker 客户端和 docker 服务端组成。而服务端有包括 docker 容器、守护进程。
-
-## Docker
-
-### 连接 docker
-
-c/s 结构的软件都具有一个特点，使用ip地址来建立连接。这个地址通常可以使用localhost 或者 ip 地址。但是，如果是在windows或者mac上连接，由于是在 boot2ocker 运行的 docker。boot2docker 其实是一个本地的虚拟机，拥有自己的ip地址和端口号，因此要连接的其实是 boot2docker 的ip地址和端口号，而不是宿主机的。
-
-> 查看 boot2docker 的ip地址
-
-当启动或者安装 boot2docker 的时候，会有提示设置DOCKER_HOST的值，改值存储的就是ip地址和端口号。
-```
-$ boot2docker start
-```
-或者运行 boot2docker的ip 命令来查看端口号。
-```
-$ boot2docker ip
-```
-###  启动 Docker
-如果是使用 boot2docker 的docker，启动命令为
-boot2docker start
+Docker 是一个 CS 结构的软件，有点类似于 MySQL，使用之前需要先启动。
 
 如果是 Linux 安装的 docker 启动命令一般为
+```
 sudo service docker start
+```
+Mac 和 Windows 都有 Docker desktop 图形软件用于启动。
 
-如果不是，请查看 Linux 的系统服务的启动软件是什么，应用响应的启动方式即可。
+## Image
 
-### 验证docker 是否正确安装且运行
+> 查看本地可用镜像
 
-$ sudo docker info
+```shell
+docker images
+```
 
+首次安装通常没有本地镜像。制作镜像是一个麻烦的过程，不适合新手，既然镜像只是一个文件，我们就可以使用别人制作的镜像。Docker 公司创建了一个仓库，任何组织和个人都可以将制作的镜像分享出来供大家使用。主流的 linux 发行版都有维护官方的 docker 镜像，通过 search 指令即可搜索。
+
+> 通过关键词搜索镜像
+
+例如搜索 ubuntu 镜像。
+
+```shell
+docker search ubuntu
+```
+
+会列出获得评星最高的几个镜像，通过第一列的名字即可拉取镜像到本地。
+
+```
+NAME                                                      DESCRIPTION                                     STARS               OFFICIAL            AUTOMATED
+ubuntu                                                    Ubuntu is a Debian-based Linux operating sys…   11351               [OK]
+dorowu/ubuntu-desktop-lxde-vnc                            Docker image to provide HTML5 VNC interface …   468                                     [OK]
+rastasheep/ubuntu-sshd                                    Dockerized SSH service, built on top of offi…   248                                     [OK]
+consol/ubuntu-xfce-vnc                                    Ubuntu container with "headless" VNC session…   226                                     [OK]
+ubuntu-upstart                                            Upstart is an event-based replacement for th…   110                 [OK]
+.
+.
+.
+```
+
+> 拉取镜像。 
+
+```shell
+docker pull ubuntu
+```
 
 ## 容器
 
+### 查看已有的容器。
+
+```
+docker ps -a
+```
+
+首次运行应该没有任何容器。
+
 ### 创建并启动容器 docker run 命令
+
+run 命令用于从一个镜像创建容器，并运行。
+
+```shell
+docker run ubuntu
+```
+
+- ubuntu : 基于什么镜像来创建容器，除了ubuntu，还有 fecora、debian、centos等基础镜像。在选择的镜像上创建容器。当执行run命令时，docker首先会在本地查找是否存在该镜像，如果不存在，则会搜索Docker Hub Registry。查看 Docker Hub 中是否有该镜像，Docker 一旦找到该镜像，就会下载到本地宿主机中。然后Docker 会用该镜像修创建一个新容器。该容器拥有自己的网络、IP地址、以及一个用于和宿主机通信的网桥网络接口。
+
+可见，我们可以不必拉取单独拉取镜像，在创建的时候指定镜像名字，就能自动拉取镜像到本地，然后创建容器。
+
+以上指令执行完之后，容器自动退出了。可以通到 `docker ps -l` 查看到最后运行的容器的执行时间。
+
+
+
+
 ```
 $ sudo docker run -i -t ubuntu /bin/bash
 ```
 - run : docker 的命令
 - -i : 保证容器中 STDIN 是开启的。尽管这里没有附着的容器中。
 - -t : 交互式的输入是shell的灵魂，-t则是为docker 分配一个伪tty 终端。这样创建的容器才成提供一个交互式的shell。
-- ubuntu : 基于什么镜像来创建容器，除了ubuntu，还有recora、debian、centos等基础镜像。在选择的镜像上创建容器。当执行run命令时，docker首先会在本地查找是否存在该镜像，如果不存在，则会搜索Docker Hub Registry。查看 Docker Hub 中是否有该镜像，Docker 一旦找到该镜像，就会下载到本地宿主机中。然后Docker 会用该镜像修创建一个新容器。该容器拥有自己的网络、IP地址、以及一个用于和宿主机通信的网桥网络接口。
+
 - /bin/bash : 启动docker执行的命令，这个参数会执行容器中的/bin/bash命令。如果执行该命令，启动后就会有一个容器内的shell可供使用。
+
+可用的参数还有:
 
 - -p <port>: 指定打开的端口号。
 - --name <container_name>: 给启动的容器命名
@@ -60,6 +96,7 @@ $ sudo docker run -i -t ubuntu /bin/bash
 - -e : 指定环境变量，如 `-e "WEB_PORT=8080"`
 
 ```
+
 $ sudo docker run -d -p 80 --name my_web jamture01/my_docker \
 nginx -g "deamon off;"
 ```
@@ -79,10 +116,12 @@ nginx -g "deamon off;"
 将宿主机的 8080 端口绑定到容器的 80 端口上。
 
 也可以将端口绑定限制在特定网络接口（即IP地址）上
+
 ```
 $ sudo docker run -d -p 127.0.0.1:80:80 --name my_web jamture01/my_docker \
 nginx -g "deamon off;"
 ```
+
 类似的可以将容器的 80 端口绑定到宿主机的一个随机端口上。
 
 ```
@@ -100,7 +139,9 @@ nginx -g "deamon off;"
 $ sudo docker run -d -P --name my_web jamture01/my_docker \
 nginx -g "deamon off;"
 ```
+
 #### 挂载卷
+
 -v: <source_directory>:<target_directory>
 
 -v 将宿主机的目录作为卷挂载到容器里。指定卷的源目录和在容器中的目的目录，通过“:”分割。如果目的目录不存在，docker 会自动创建一个。也可以在目录后面加上 rw 或者 ro 来指定目的目录的读写状态。
@@ -125,7 +166,7 @@ nginx -g "deamon off;"
 
 ### 使用容器
 
-执行 /bin/bash 后的容器会有一个交互式的shell用于输入。提示会变成类似root@fe9dac62ee46:/# 的输入提示。这就是容器中的shell环境。
+执行 /bin/bash 后的容器会有一个交互式的 shell 用于输入。提示会变成类似root@fe9dac62ee46:/# 的输入提示。这就是容器中的shell环境。
 
 > 查看主机名 hostname
 
@@ -221,7 +262,9 @@ sudo docker attach 容器名 | ID
 
 守护式容器(daemonized container)没有交互式会话，非常适合在后台运行应用程序和服务。大多数情况都是创建守护式的容器。
 
+```shell
 sudo docker run --name daemon_dave -d  ubuntu /bin/sh -c "while true; do echo hello world; sleep 1; done"
+```
 
 -d 参数创建的容器将会在后台运行。容器执行了一个bash 死循环，不停地打印输出。知道容器或者进程停止运行。
 
@@ -231,11 +274,15 @@ sudo docker run --name daemon_dave -d  ubuntu /bin/sh -c "while true; do echo he
 
 上面创建的守护式容器在后台执行，为了查看容器内部在干什么，可以查看日志文件。
 
+```shell
 sudo docker logs daemon_dave
+```
 
 此时，只会输出最后几条日志并返回。也可以使用 -f 参数来监控容器的日志，这与 tail -f 命令非常类似，
 
-> sudo docker logs -f <容器名|ID>
+```shell
+sudo docker logs -f <容器名|ID>
+```
 
 Ctrl + C 退出监控。
 
@@ -346,9 +393,10 @@ $ sudo docker run -d -p 127.0.0.1::80 --name <docker_name> <directory_name/image
 
 这里将容器的 80 端口绑定到本地宿主机的 127.0.0.1 这个 IP
 
-### 查看 容器端口 docker port
-
-sudo docker ps -l
+### 查看 容器端口
+```shell
+docker port
+```
 
 或者直接查看哪个端口的映射情况，
 
