@@ -30,20 +30,30 @@ $ sudo docker images
 
 该命令会列出本地所有的dcoker镜像，这些镜像就是执行docker run指令时，从docker官方上下载的。
 
+`docker info` 指令输出的 `Docker Root Dir` 是 docker 的存储位置。
+
 - 在linux上
 
-本地的镜像存放在/var/lib/docker目录下。每个镜像都保存在docker所采用的存储驱动目录下面，如aufs或者devicemapper。
+本地的镜像存放在 /var/lib/docker 目录下。每个镜像都保存在docker所采用的存储驱动目录下面，如aufs或者devicemapper。
+
 容器保存在/var/lib/docker/containers目录下看到所有的容器。
+
+
+但是由于 Mac 和 Windows 是由虚拟环境运行 Docker 的，它在真实目录的路径并不是如此。
 
 - 在 Mac 上(Docker for Mac 版本)
 
-镜像:~/Library/Containers/com.docker.docker/Data/com.docker.driver.amd64-linux/Docker.raw
-容器:
+镜像: `~/Library/Containers/com.docker.docker/Data/vms/0/`
 
-   镜像从仓库中下载下来，默认的仓库是docker公司运营的公共Registry服务。及Docker Hub。也可以自己建立Registry仓库。
+容器:
+   镜像从仓库中下载下来，默认的仓库是 docker 公司运营的公共Registry服务。及Docker Hub。也可以自己建立Registry仓库。
 
 
 每个仓库都可以存放很多镜像，比如ubuntu仓库，
+
+- windows
+
+On windows, the default location for docker images is C:\ProgramData\DockerDesktop
 
 
 ## 下拉仓库
