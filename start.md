@@ -76,7 +76,6 @@ docker run ubuntu
 
 
 
-
 ```
 $ sudo docker run -i -t ubuntu /bin/bash
 ```
@@ -86,231 +85,42 @@ $ sudo docker run -i -t ubuntu /bin/bash
 
 - /bin/bash : 启动docker执行的命令，这个参数会执行容器中的/bin/bash命令。如果执行该命令，启动后就会有一个容器内的shell可供使用。
 
-可用的参数还有:
-
-- -p <port>: 指定打开的端口号。
-- --name <container_name>: 给启动的容器命名
-- -d : 以分离（detached）式的方式在后台运行
-- -P
-- -w : 指定命令的运行工作目录
-- -e : 指定环境变量，如 `-e "WEB_PORT=8080"`
-
-```
-
-$ sudo docker run -d -p 80 --name my_web jamture01/my_docker \
-nginx -g "deamon off;"
-```
-
--p 标志用来控制 Docker 在运行时应该公开哪些网络端口给外部（宿主机）。运行一个容器时，Docker可以通过两种方式来在宿主机上分配端口。
-
-1. Docker 可以在宿主机上随机选择一个位于 49153 ~ 65535 的一个比较大的端口号映射到容器80端口上。
-2. 可以指定宿主机的一个端口映射到容器的 80 端口上。
-
-上面的运行方式将使用第一中方式，随机分配端口。
-
-```
-$ sudo docker run -d -p 8080:80 --name my_web jamture01/my_docker \
-nginx -g "deamon off;"
-```
-
-将宿主机的 8080 端口绑定到容器的 80 端口上。
-
-也可以将端口绑定限制在特定网络接口（即IP地址）上
-
-```
-$ sudo docker run -d -p 127.0.0.1:80:80 --name my_web jamture01/my_docker \
-nginx -g "deamon off;"
-```
-
-类似的可以将容器的 80 端口绑定到宿主机的一个随机端口上。
-
-```
-$ sudo docker run -d -p 127.0.0.1::80 --name my_web jamture01/my_docker \
-nginx -g "deamon off;"
-```
-
-可以使用 docker inspect 或者 docker port 命令来查看容器内的 80 端口具体被绑定到宿主机哪个端口上。
-
-***也可以在端口绑定时使用/udp后缀来指定 UDP 端口***
-
--P : 开放在 Dockerfile 中的 EXPOSE 指令中设置的所有端口。
-
-```
-$ sudo docker run -d -P --name my_web jamture01/my_docker \
-nginx -g "deamon off;"
-```
-
-#### 挂载卷
-
--v: <source_directory>:<target_directory>
-
--v 将宿主机的目录作为卷挂载到容器里。指定卷的源目录和在容器中的目的目录，通过“:”分割。如果目的目录不存在，docker 会自动创建一个。也可以在目录后面加上 rw 或者 ro 来指定目的目录的读写状态。
-
-```
-$ sudo docker run -d -P 80 --name web_site \
--v $PWD/website:/var/www/html/website:ro \
-jamture01/my_docker \
-nginx -g "deamon off;"
-```
-
-> 卷： 卷是一个或多个容器内被选定的目录，可以绕过分层的联合文件系统（Union File System），为 Docker 提供持久数据或者共享数据。这意味着对卷的修改会立即生效，并绕过镜像。当提交或者创建镜像时，卷不被包含在镜像里。卷可以在容器间共享，即便是容器停止，卷里的内容依旧存在。
-
-适用卷的场景
-
-- 频繁改动的文件或项目（开发中或测试），比希望重现构建镜像。
-- 主机改动后，立即在容器中生效，反之亦然。
-- 保存容器中产生的数据
-- 多个容器中共享代码。
-
-
-
-### 使用容器
-
 执行 /bin/bash 后的容器会有一个交互式的 shell 用于输入。提示会变成类似root@fe9dac62ee46:/# 的输入提示。这就是容器中的shell环境。
 
 > 查看主机名 hostname
 
 容器的主机名就是容器的ID。打开的容器，就是一个完整的Ubuntu系统。
 
-> 查看 /etc/hosts 文件
 
-127.0.0.1	localhost
-::1	localhost ip6-localhost ip6-loopback
-fe00::0	ip6-localnet
-ff00::0	ip6-mcastprefix
-ff02::1	ip6-allnodes
-ff02::2	ip6-allrouters
-172.17.0.2	fe9dac62ee46  # docker 已为该容器添加了一条主机配置项。
 
-再看看容器的网络配置情况。
+就像一个 Linux 系统一样，我们可以在其中执行任何在 Linux 中执行的程序或者操作。使用 exit 即可退出 `bash` 程序，当程序结束，容器也自动结束了。（我们有其它方法能让容器一直运行，现在先不关注这些）。当容器退出后，当我们编辑文件，或安装一些软件，被安装到哪里了呢？
 
-> 查看网络配置 # ip a
-如果没有，看下一条，安装
+再次运行 docker，`sudo docker run -i -t ubuntu /bin/bash`。查看我们编辑的文件，或者运行刚刚装过的软件，发现都没了。
 
-```
-# lo 的换回接口
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-2: tunl0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN group default qlen 1
-    link/ipip 0.0.0.0 brd 0.0.0.0
-3: ip6tnl0@NONE: <NOARP> mtu 1452 qdisc noop state DOWN group default qlen 1
-    link/tunnel6 :: brd ::
-# 标准 eth0 网络接口。
-100: eth0@if101: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default
-    link/ether 02:42:ac:11:00:02 brd ff:ff:ff:ff:ff:ff link-netnsid 0
-    inet 172.17.0.2/16 brd 172.17.255.255 scope global eth0
-       valid_lft forever preferred_lft forever
+```shell
+docker ps -a
 ```
 
-> 安装一些常用的命令
+可以看到有多个容器，每次执行 `run` 都会从原始新启动一个容器。而不是从容器运行。运行容器为：
 
-apt-get update
-//ifconfig
-//apt install net-tools  ifconfig 已经好多年没有维护了，你需要使用ip命令。
-// ip 套件
-apt install iproute2
-//ping
-apt install iputils-ping
-//
-
-> 查看进程
-ps -aux
-
-### 退出容器 exit
-
-一旦退出了shell， 容器也就随之停止了。
-
-### 查看宿主机中存在的容器列表 docker ps -a
-```
-CONTAINER ID        IMAGE                    COMMAND                  CREATED             STATUS                          PORTS                     NAMES
-容器id               用于创建该容器的镜像        容器最后执行的命令           创建时间             退出状态                                                   名字
-fe9dac62ee46        ubuntu                   "/bin/bash"              14 hours ago        Exited (127) 12 seconds ago                               clever_bassi
-```
-docker ps 只能查看到正在运行的容器， -a 参数查看所有容器。-l 则只列出最后一次运行的容器，包括正在运行的和停止的。
-
-
-短UUID 长UUID和名称都能用来指定一个容器。如上面的id就是短的UUID，它是UUID的前一段。
-
-### 容器命名
-
-docker 会为创建的容器随机生成一个名字，如上面的clever_bassi
-。如果想要自己指定名字，可以使用--name 表示来实现。
-
-sudo docker run --name bob_the_container -i -t ubuntu /bin/bash
-
-上述创建一个名为 bob_the_container 的容器。一个合法的容器名包括 字母、数字、下换线、圆点、横线。容器的名称必须是唯一的，否则会创建失败。可以使用docker rm 删除已存在的容器。
-
-### 重新启动已经停止的容器 start
-
+```shell
 sudo docker start 容器名 | ID
-
-docker restart 重启一个容器。
-
-启动后发现，默认并没有打开交互式的shell。想要交互，则需要附着到该shell上。
-
-### 附着到容器上 attach
-
-容器重新启动的时候，会沿用docker run命令指定的参数来运行。因此docker启动的时候回运行一个交互式的shell会话。此外，还可以使用 docker attach 命令重新附着到该容器会话上。
-
-sudo docker attach 容器名 | ID
-
-**按下回车才会进入会话**
-
-### 创建守护式容器
-
-守护式容器(daemonized container)没有交互式会话，非常适合在后台运行应用程序和服务。大多数情况都是创建守护式的容器。
-
-```shell
-sudo docker run --name daemon_dave -d  ubuntu /bin/sh -c "while true; do echo hello world; sleep 1; done"
 ```
 
--d 参数创建的容器将会在后台运行。容器执行了一个bash 死循环，不停地打印输出。知道容器或者进程停止运行。
-
-使用该命令创建的容器只返回了一个容器ID，而不是交互式的shell。
-
-### 容器内部都在干什么 docker log
-
-上面创建的守护式容器在后台执行，为了查看容器内部在干什么，可以查看日志文件。
+### 启动容器
 
 ```shell
-sudo docker logs daemon_dave
+sudo docker start 容器名 | ID
 ```
 
-此时，只会输出最后几条日志并返回。也可以使用 -f 参数来监控容器的日志，这与 tail -f 命令非常类似，
+启动之后，docker 运行我们之前在创建 docker 指定的程序（即 /bin/bash）之后就退出了。那如何进入操作呢？ 可以添加 `-a` 参数(表示附着模式)。
+
+### 进入正在运行的容器
 
 ```shell
-sudo docker logs -f <容器名|ID>
+docker exec -it <容器名 | ID> /bin/bash
 ```
 
-Ctrl + C 退出监控。
-
-监控某一片段，和之前类似，只需要在tail命令之后加入-f --lines标志即可
-
-> docker logs --tail 10 <容器名|ID>  获取日志最后10行内容
-
-> docker logs --tail 0 -f <容器名|ID>  跟踪容器最新的日志而不必读取整个日志文件。
-
-还可以使用-t给每条日志加上时间戳
-
-> sudo docker logs -ft <容器名|ID>
-
-### 查看容器内的进程 docker top
-
-> sudo docker top <容器名|ID>
-
-### 在容器内部运行进程 docker exec
-
-在容器内部额外启动新进程。分为后台和交互两种
-
-### 后台
-
-> sudo docker exec -d <容器名|ID> touch /dec/new_config_file
-
-- -d ： 表名需要运行一个后台进程，
-
-- 容器名后面是要执行的命令。
 
 ### 交互进程
 
@@ -319,85 +129,3 @@ Ctrl + C 退出监控。
 - -t -i : 标志执行进程创建TTY，并捕捉STDIN。
 
 - 容器名后面是要执行的命令。
-
-
-### 停止守护进程容器 docker stop
-
-> sudo docker stop <容器名|ID>
-
-docker stop 命令会向容器发送SIGTERM信号。如果想要快速停止某个容器，也可以使用docker kill命令来向容器发送SIGKILL信号。
-
-想要查看已经停止的容器的状态，则可以使用docker ps命令。docker ps
- -n x命令则会显示最后x个容器，不论这些容器是在运行还是已经停止。
-
-
-### 自动重启容器
-
-容器中的进程停止了，容器也会随之结束。如果容器中的进程因为错误而终止，可以通过--restart标志重新启动该容器。--restart 会检查容器的退出代码，并据此决定是否要重启容器。
-
-> sudo docker run --restart=always --name test -d ubuntu /bin/sh -c "while true; do echo hello world; sleep 1; done"
-
-- always 无论退出代码是什么，docker都会自动重启该容器
-- on-failure 退出代码为非0时重启。另外，on-failure还可以接受一个可选的重启次数，如--restart=on-failure:5 最多重启5次。
-
-
-### 更多容器信息 docker inspect
-
-> sudo docker inspect <容器名|ID>
-
-docker inspect 会对容器进行详细的检查，然后返回其配置信息，包括名称、命令、网络配置以及很多有用的数据。
-
-
-我们也可以使用-f或者--format来选定查看结果，如：
-> sudo docker inspect --format='{{ .State.Running }}' <容器名|ID>
-
-上述命令会返回命令的运行状态，-f或者--format 远没有表面看上去那么简单。该标志支持完整的Go语言模板。
-
-上述的容器名部分还可以指定多个容器，只需要以空格分割即可。
-
-**查看/var/lib/docker目录可以深入了解docker的工作原理，该目录下存放着Docker镜像、容器以及容器配置。所有的容器都保存在/var/lib/docker/containers目录下。**
-
-
-### 删除容器 docker rm
-
-> docker rm <容器名|ID>
-
-运行中的容器无法删除。没有删除全部容器的指令，可以通过如下技巧
-
-> docke rm `docker ps -a -q`
-
--a : 所有容器，
--q : 只返回容器的id，而不返回其他信息。
-
-### 查看 docker 容器信息
-
-### -p 为容器指定端口
-
-$ sudo docker run -d -p --name <docker_name> <directory_name/image_name:tag> <command>
-
-对外公开 EXPOSE 指令指定的所有端口号，在主句上的端口映射会随机分配。
-
-$ sudo docker run -d -p 80 --name <docker_name> <directory_name/image_name:tag> <command>
-
-指定 容器打开 80 端口，但是在主机内的端口映射却是任意的。
-
-指定映射关系
-
-$ sudo docker run -d -p 8080:80 --name <docker_name> <directory_name/image_name:tag> <command>
-
-将主句的 8080 映射到 docker 容器的 80 端口。
-
-有时候，由于网络的改变，主机的 ip 是不停的变的，此时要想通过 ip 访问一个 容器变得麻烦，只要ip改变，就要改变用于访问容器的 ip 值。其实 docker 也可以指定将端口绑定到数据的什么 ip 上。
-
-$ sudo docker run -d -p 127.0.0.1::80 --name <docker_name> <directory_name/image_name:tag> <command>
-
-这里将容器的 80 端口绑定到本地宿主机的 127.0.0.1 这个 IP
-
-### 查看 容器端口
-```shell
-docker port
-```
-
-或者直接查看哪个端口的映射情况，
-
-sudo docker port <container_name> 80
