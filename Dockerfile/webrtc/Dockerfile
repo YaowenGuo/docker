@@ -11,7 +11,6 @@ wget \
 git \
 vim \
 clang \
-python \
 && mkdir -p /opt/webrtc \
 && mkdir -p /usr/local/share/v2ray \
 && cd /root \

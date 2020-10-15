@@ -128,7 +128,7 @@ sudo docker run --name bob_the_container -i -t ubuntu /bin/bash
 sudo docker run --name daemon_dave -d  ubuntu /bin/sh -c "while true; do echo hello world; sleep 1; done"
 ```
 
--d 参数创建的容器将会在后台运行。容器执行了一个bash 死循环，不停地打印输出。知道容器或者进程停止运行。
+-d 参数创建的容器将会在后台运行。容器执行了一个bash 死循环，不停地打印输出。直到容器或者进程停止运行。
 
 使用该命令创建的容器只返回了一个容器ID，而不是交互式的shell。
 

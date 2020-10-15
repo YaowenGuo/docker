@@ -4,7 +4,7 @@
 
 ## 注册Docker Hub账号
 
-构建系统很重要的一环就是共享和发布，因此可以先初测一个Docker Hub账号，然后就可以使用Docker login命令登录了。
+构建系统很重要的一环就是共享和发布，因此可以先建立一个Docker Hub账号，然后就可以使用Docker login命令登录了。
 
 个人的信息都会保存在~/.dockercfg文件中。
 
@@ -24,10 +24,26 @@ Login Succeeded
 
 ## 将本地镜像推送到 Hub 仓库
 
+docker tag local-image:tagname new-repo:tagname
+docker push new-repo:tagname
+
 ```
-sudo docker push <repository_name/image_name>
+sudo docker push <docker_ic/image_name>
 ```
-repository_name 仓库名是必须的，否则 docker 会将镜像推雄到顶级 的 root 仓库，而 root 仓库是由 Docker 公司团队管理的，因此推送无法成功。
+docker_ic 即 docker hub 用户 id，是必须添加的，否则 docker 会将镜像推雄到顶级的 root 仓库，而 root 仓库是由 Docker 公司团队管理的，因此推送无法成功。
+
+image_name 即在 DockerHub 创建一个 repository 本地镜像名必须和仓库名相同。如果不同可以使用 tag 命令修改
+
+```
+docker tag webrtc:0.1 albertguo88/webrtc_image:latest
+```
+然后即可推送
+```
+docker  push albertguo88/webrtc_image:latest # 如果 tag 是 latest 可以省略
+```
+
+
+
 
 ## 自动构建
 
