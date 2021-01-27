@@ -9,6 +9,8 @@
 - -w : 指定命令的运行工作目录
 - -e : 指定环境变量，如 `-e "WEB_PORT=8080"`
 
+**`Docker 的参数是有顺序的，<-d -p -v --name 等参数> <镜像 name> <传给 image 执行的指令>`**
+
 ### -p 为容器指定端口
 
 $ sudo docker run -d -p --name <docker_name> <directory_name/image_name:tag> <command>

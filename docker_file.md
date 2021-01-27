@@ -11,9 +11,9 @@ Dockerfile 是一个用来构建镜像的文本文件，文本内容包含了一
 ## 各个指令的作用
 
 
-## 创建容器。
+## 构建镜像。
 
 
 ```
-docker build -t <镜像名>:<镜像 tag> <Dockerfile 所在的路径>
+docker build -t <镜像名>:<镜像 tag> <Dockerfile 所在的目录>
 ```
