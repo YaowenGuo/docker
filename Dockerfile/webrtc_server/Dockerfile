@@ -38,5 +38,7 @@ npm \
 
 WORKDIR /opt/webrtc/
 
-
+# 应用程序提供 443 和 80 服务端口。
+EXPOSE 443
+EXPOSE 80
 

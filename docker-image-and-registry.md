@@ -105,6 +105,7 @@ $ docker search [镜像名[:tag]]
 查找到之后就可以使用镜像名下载或者创建本机镜像。docker会自动从Dcoker Hub上下载并创建本地镜像。
 
 ## 构建镜像
+
 并不是真的从零创建一个新的镜像，而是使用一个已有的基础镜像，如ubuntu构建。如果想要从零构建一个全新的镜像，可以参考:https://docs.docker.com/articles/baseeimages/
 
 构建docker镜像有两种方法
@@ -115,12 +116,13 @@ $ docker search [镜像名[:tag]]
 
 
 ### commit创建镜像
+
 一般步骤是:
 1. docker run 基于已有的镜像创建一个容器。
 2. 运行容器，在容器中安装需要的软件和服务。例如ubuntu使用apt命名安装软件。
 3. 退出容器。docker commit 执行变更。就像是对git仓库提交一样，将修改提交为一个新镜像。
 
-> sudo docker commit <容器名|ID[:标签名]> <目标仓库/镜像名> [-m="说明" --author="作者"]
+> sudo docker commit <容器名|ID[:标签名]> <目标仓库/镜像名>
 
 - ID，可以通过 docker ps -l -q 得到刚创建的容器的id。
     - -l: --latest
