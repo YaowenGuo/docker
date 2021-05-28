@@ -4,7 +4,7 @@
 cd <Dockerfile 所在目录>
 docker build -t webrtc_build:latest .
 
-docker run -itd -v /Users/albert/project/webrtc/:/opt/webrtc  --name webrtc_build webrtc_build /bin/bash
+docker run -itd -v $HOME/project/webrtc/:/opt/webrtc  --name webrtc_build webrtc_build /bin/bash
 
 docker exec -it webrtc_build /bin/bash
 

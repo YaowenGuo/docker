@@ -52,5 +52,5 @@ docker  push albertguo88/webrtc_image:latest # 如果 tag 是 latest 可以省�
 ## 删除镜像
 本地而已
 ```
-docker rmi <repository_name/image_name> [....]
+docker rm <repository_name/image_name> [....]
 ```

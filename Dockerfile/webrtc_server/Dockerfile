@@ -19,22 +19,6 @@ npm \
 && curl -sL https://deb.nodesource.com/setup_15.x | bash - \
 && apt-get install -y nodejs
 
-# COPY ./config.json /usr/local/etc/v2ray/
-
-# CMD v2ray --config=/usr/local/etc/v2ray/config.json
-
-# ENV \
-# http_proxy=http://127.0.0.1:1087 \
-# https_proxy=http://127.0.0.1:1087 \
-
-# echo "
-# DEPOT_TOOLS="/opt/webrtc/depot_tools"
-# if [ -d $DEPOT_TOOLS]; then
-#     export PATH=$PATH:$DEPOT_TOOLS
-# fi
-# " >> /etc/profile
-
-# source /etc/profile
 
 WORKDIR /opt/webrtc/
 
