@@ -4,7 +4,7 @@
 cd <Dockerfile 所在目录>
 docker build -t albertguo88/build_webrtc:latest .
 
-docker run -itd -v $HOME/project/webrtc/:/opt/webrtc  --name webrtc_build albertguo88/build_webrtc /bin/bash
+docker run -itd --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --security-opt apparmor=unconfined -v $HOME/project/webrtc/:/opt/webrtc -w /opt/webrtc/linux_android --name webrtc_build albertguo88/build_webrtc /bin/bash
 
 docker exec -it webrtc_build /bin/bash
 
@@ -35,4 +35,3 @@ source
 ## 问题
 
 1. /etc/bashrc 不自动生效。
-2. /v2ray 下载不成功。

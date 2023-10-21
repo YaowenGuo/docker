@@ -10,7 +10,7 @@
 
 ## 本机登录
 
-在 Docker Hub 网站可以登录，为了将本地自己构建的镜像推送到 Docker hub，需要在本地登录。
+在 Docker Hub 网站可以登录，为了将本地自己构建的镜像推送到 Docker hub，需要在本地登录。
 
 ```
 docker login
