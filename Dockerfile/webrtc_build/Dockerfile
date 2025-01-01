@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:20.04
 
 LABEL Description="This image is used to build webrtc native code or generate android demo project." Vendor="GuoYaowen" Version="0.2"
 
@@ -17,6 +17,7 @@ clang \
 systemd \
 pkg-config \
 file \
+xz-utils \
 && mkdir -p /opt/webrtc \
 && cd /root
 
@@ -24,15 +25,14 @@ file \
 # ENV \
 # http_proxy=http://127.0.0.1:1087 \
 # https_proxy=http://127.0.0.1:1087
-
-RUN echo "\n\n\
-DEPOT_TOOLS="/opt/webrtc/depot_tools"\n\
-if [ -d \$DEPOT_TOOLS ]; then\n\
-    export PATH=$PATH:\$DEPOT_TOOLS\n\
+# depot_tools 不能使用 src/third_party 目录下的，否则 gclient sync 版本会有冲突。
+RUN echo '\n\n\
+export DEPOT_TOOLS=/opt/webrtc/linux_android/src/third_party/depot_tools\n\
+if [ -d $DEPOT_TOOLS ]; then\n\
+    PATH=$PATH:$DEPOT_TOOLS\n\
 fi\n\
-ANDROID_HOME=/opt/webrtc/linux_android/src/third_party/android_sdk\n\
-export PATH=$PATH:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools\n\
-"\
+export ANDROID_HOME=/opt/webrtc/linux_android/src/third_party/android_sdk\n\
+export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools\n'\
 >> /etc/bashrc
 
 # RUN source /etc/bashrc

@@ -59,7 +59,7 @@ docker inspect 会对容器进行详细的检查，然后返回其配置信息�
 
 **查看/var/lib/docker目录可以深入了解docker的工作原理，该目录下存放着Docker镜像、容器以及容器配置。所有的容器都保存在/var/lib/docker/containers目录下。**
 
-### 查看 容器端口
+### 查看容器端口
 ```shell
 docker port
 ```
